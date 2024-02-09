@@ -28,6 +28,9 @@ def create_folder(folder_path):
     else:
         print(f"Folder already exists: {folder_path}")
 
+########################
+#Functions for CSV files
+########################
 # Load Spanish stopwords.
 spanish_stopwords = stopwords.words('spanish')
 
