@@ -3,7 +3,11 @@
 
 #pandas for CSV file handling
 #nltk for stopwords and tokenization
+#os for file handling
+#re for regular expressions
 
+import re
+import os
 import nltk
 nltk.download('stopwords')
 nltk.download('punkt')
@@ -12,7 +16,7 @@ import pandas as pd
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
-import os
+
 
 def create_folder(folder_path):
     # Check if the folder exists
@@ -26,7 +30,12 @@ def create_folder(folder_path):
 # Load Spanish stopwords.
 spanish_stopwords = stopwords.words('spanish')
 
+# Function to remove stopwords from a text
 def remove_stopwords(text):
+    # Remove URLs
+    text = re.sub(r'https?://\S+|www\.\S+', ' ', text) 
+    # Remove special characters
+    text = re.sub(r'[\W_]+', ' ', text)  # This regex replaces any non-alphanumeric character with a space
     # Tokenize the text
     words = word_tokenize(text)
     # Remove stopwords
