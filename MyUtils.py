@@ -1,13 +1,17 @@
 import os
 import json
+import shutil
+
 def create_folder(folder_path):
     # Check if the folder exists
-    if not os.path.exists(folder_path):
-        # Create the folder
-        os.makedirs(folder_path)
-        print(f"Folder created: {folder_path}")
-    else:
-        print(f"Folder already exists: {folder_path}")
+    if os.path.exists(folder_path):
+        # Remove the folder and all its contents
+        shutil.rmtree(folder_path)
+        print(f"Existing folder deleted: {folder_path}")
+
+    # Create the folder
+    os.makedirs(folder_path)
+    print(f"Folder created: {folder_path}")
 
 def save_to_file(result, file_path, output_dir='logs'):
     log_filename = os.path.join(output_dir, f'{file_path}')

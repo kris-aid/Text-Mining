@@ -4,6 +4,7 @@ import spacy
 import json
 from MyUtils import create_folder, save_to_file
 import os
+import pandas as pd
 # Initialize Spacy Spanish language model
 nlp = spacy.load("es_core_news_sm")
 
@@ -39,5 +40,29 @@ def lemmatizationMapReduce(input_folder, output_folder):
 
     print(f"All files in '{input_folder}' processed and outputs saved in '{output_folder}'.")
 
+def lemmatizationCSV(input_folder, output_folder):
+    create_folder(output_folder)
+    
+    # Loop through all the CSV files in the input folder
+    for filename in os.listdir(input_folder):
+        input_file_path = os.path.join(input_folder, filename)
+        
+        # Check if it's a file and ends with .csv
+        if os.path.isfile(input_file_path) and filename.endswith('.csv'):
+            print(f"Lemmatizing {filename}...")
+            
+            # Load CSV file
+            df = pd.read_csv(input_file_path)
+            
+            # Lemmatize the 'tweet_text' column, convert non-strings to strings
+            df['tweet_text'] = df['tweet_text'].apply(lambda text: ' '.join([token.lemma_ for token in nlp(str(text))]) if pd.notnull(text) else text)
+            
+            # Save the lemmatized data to a CSV file in the output folder
+            output_file_path = os.path.join(output_folder, filename)
+            df.to_csv(output_file_path, index=False)
+            
+    print(f"Lemmatization complete for all files in '{input_folder}'. Results are in '{output_folder}'.")
+
 # Usage
+# lemmatizationCSV('Tweets_by_apellido_noStops', 'Tweets_by_apellido_lemmas')
 # lemmatizationMapReduce('MapReduce_Manifests_noStops', 'MapReduce_Manifests_lemmas')
