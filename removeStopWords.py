@@ -79,8 +79,8 @@ def process_word_count_pairs(pairs):
     processed_pairs = []
     for word, count in pairs:
         cleaned_word = clean_word(word)
-        # Filter out stopwords and non-empty strings
-        if cleaned_word and cleaned_word.lower() not in spanish_stopwords:
+        # Filter out stopwords, non-empty strings, and words with 2 or fewer characters
+        if cleaned_word and len(cleaned_word) > 2 and cleaned_word.lower() not in spanish_stopwords:
             processed_pairs.append([cleaned_word, count])
     return processed_pairs
 
