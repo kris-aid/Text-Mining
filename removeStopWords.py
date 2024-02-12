@@ -25,16 +25,16 @@ from nltk.tokenize import word_tokenize
 # Load Spanish stopwords.
 spanish_stopwords = stopwords.words('spanish')
 
-# Function to remove stopwords from a text
+# Function to remove stopwords and short words from a text
 def remove_stopwords(text):
     # Remove URLs
     text = re.sub(r'https?://\S+|www\.\S+', ' ', text) 
     # Remove special characters
-    text = re.sub(r'[\W_]+', ' ', text)  # This regex replaces any non-alphanumeric character with a space
+    text = re.sub(r'[\W_]+', ' ', text)
     # Tokenize the text
     words = word_tokenize(text)
-    # Remove stopwords
-    filtered_words = [word for word in words if word.lower() not in spanish_stopwords]
+    # Remove stopwords and words with 3 characters or less
+    filtered_words = [word for word in words if word.lower() not in spanish_stopwords and len(word) > 3]
     # Reconstruct the text
     return ' '.join(filtered_words)
 
