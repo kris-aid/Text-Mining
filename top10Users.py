@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import matplotlib.pyplot as plt
 
 # Define the path to the directory with your CSV files
 directory_path = 'Tweets_by_apellido'
@@ -28,17 +29,32 @@ top_10_tweet_counts = tweet_counts.sort_values(ascending=False).head(10)
 # Reset the index to get a DataFrame with screen name, full name, and count columns
 top_10_df = top_10_tweet_counts.reset_index(name='tweet_count')
 
-# Drop the 'tweet_screen_name' column
-top_10_df = top_10_df.drop(columns=['tweet_screen_name'])
-
 # Ensure the output directory exists
 if not os.path.exists(output_directory):
     os.makedirs(output_directory)
 
-# Define the full output file path
-output_file_path = os.path.join(output_directory, 'Top10Users.txt')
+# Define the full output file path for the text file
+output_txt_path = os.path.join(output_directory, 'Top10Users.txt')
 
-# Save the top 10 result to a text file in the specified directory
-top_10_df.to_csv(output_file_path, index=False, sep='\t')
+# Save the top 10 result to a text file in the specified directory, excluding 'tweet_screen_name'
+output_csv_path = os.path.join(output_directory, 'Top10.csv')
+top_10_df.to_csv(output_csv_path, index=False, header=True)
 
-print(f'Top 10 tweet counts saved to {output_file_path}')
+
+# Generate a bar chart using the full name and tweet count
+plt.figure(figsize=(10, 8))
+plt.barh(top_10_df['full_name'], top_10_df['tweet_count'])
+plt.xlabel('Number of Tweets')
+plt.ylabel('Full Name')
+plt.title('Top 10 People with the Most Tweets')
+plt.gca().invert_yaxis()  # Invert y-axis to have the highest count on top
+plt.tight_layout()
+
+# Define the full output file path for the chart image
+output_chart_path = os.path.join(output_directory, 'Top10_Users_Chart.png')
+
+# Save the chart
+plt.savefig(output_chart_path)
+
+print(f'Top 10 tweet counts saved to {output_txt_path}')
+print(f"Chart saved to {output_chart_path}")
