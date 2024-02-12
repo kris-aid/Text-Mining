@@ -4,9 +4,10 @@ from MyUtils import create_folder
 from top10Users import calcTop10Users
 from top10WordsManifest import top10WordsMapReduce
 
-create_folder('Output')
-create_folder('Output/Manifest')
-create_folder('Output/Tweets')
+# create_folder('Output')
+# create_folder('Output/Manifest')
+# create_folder('Output/Manifest/lemmas')
+# create_folder('Output/Tweets')
 
 # Remove stopwords 
 noStopWordsCSV('Tweets_by_apellido', 'Output/Tweets/noStops')

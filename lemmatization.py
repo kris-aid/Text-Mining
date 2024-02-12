@@ -56,11 +56,11 @@ def lemmatizationCSV(input_folder, output_folder):
             
             # Convert 'tweet_text' to lowercase, and then lemmatize it
             df['tweet_text'] = df['tweet_text'].apply(
-                lambda text:
-                    ' '.join([token.lemma_ for token in nlp(text.lower())])
-                    if pd.notnull(text) else text
+                lambda text: ' '.join([
+                    token.lemma_ for token in nlp(text.lower()) if len(token.lemma_) >= 3
+                ]) if pd.notnull(text) else text
             )
-            
+                    
             # Save the lemmatized data to a CSV file in the output folder
             output_file_path = os.path.join(output_folder, filename)
             df.to_csv(output_file_path, index=False)

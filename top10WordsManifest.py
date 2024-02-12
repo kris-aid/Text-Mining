@@ -31,5 +31,5 @@ def top10WordsMapReduce(input_folder, output_folder):
 
             print(f"Top 10 words saved to {output_filepath}")
 
-# Example usage:
-top10WordsMapReduce('Output/Manifest/lemmas', 'Output/Manifest/top10words')
+# # Example usage:
+# top10WordsMapReduce('Output/Manifest/lemmas', 'Output/Manifest/top10words')
