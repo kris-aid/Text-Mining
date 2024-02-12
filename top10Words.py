@@ -22,7 +22,7 @@ def top10WordsMapReduce(input_folder, output_folder):
             top10words = word_count_list[:10]
             
             # Prepare the output file path
-            output_filename = f"{os.path.splitext(filename)[0]}_top10.json"
+            output_filename = f"{os.path.splitext(filename)[0]}_top10Words.json"
             output_filepath = os.path.join(output_folder, output_filename)
 
             # Save top 10 words to a new JSON file
@@ -32,4 +32,4 @@ def top10WordsMapReduce(input_folder, output_folder):
             print(f"Top 10 words saved to {output_filepath}")
 
 # Example usage:
-top10WordsMapReduce('MapReduce_Manifests_lemmas', 'MapReduce_Manifests_top10')
+top10WordsMapReduce('MapReduce_Manifests_lemmas', 'MapReduce_Manifests_top10words')
