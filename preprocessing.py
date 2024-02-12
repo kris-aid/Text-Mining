@@ -1,10 +1,15 @@
 from removeStopWords import noStopWordsCSV, noStopWordsMapReduce
 from lemmatization import lemmatizationMapReduce, lemmatizationCSV
+from MyUtils import create_folder
+
+create_folder('Output')
+create_folder('Output/Manifest')
+create_folder('Output/Tweets')
 
 # Remove stopwords 
-noStopWordsCSV('Tweets_by_apellido', 'Tweets_by_apellido_noStops')
-noStopWordsMapReduce('MapReduce_Manifests', 'MapReduce_Manifests_noStops')
+noStopWordsCSV('Tweets_by_apellido', 'Output/Tweets/noStops')
+noStopWordsMapReduce('MapReduce_Manifests', 'Output/Manifest/noStops')
 
 # Lemmatize the words 
-lemmatizationCSV('Tweets_by_apellido_noStops', 'Tweets_by_apellido_lemmas')
-lemmatizationMapReduce('MapReduce_Manifests_noStops', 'MapReduce_Manifests_lemmas')
+lemmatizationCSV('Output/Tweets/noStops', 'Output/Tweets/lemmas')
+lemmatizationMapReduce('Output/Manifest/noStops', 'Output/Manifest/lemmas')
