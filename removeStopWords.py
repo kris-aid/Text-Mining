@@ -11,7 +11,7 @@ import re
 import os
 import json
 import nltk
-from MyUtils import create_folder, save_to_file
+from MyUtils import delete_create_folder, save_to_file
 nltk.download('stopwords')
 nltk.download('punkt')
 
@@ -39,7 +39,8 @@ def remove_stopwords(text):
     return ' '.join(filtered_words)
 
 def noStopWordsCSV(input_folder, output_folder):
-    create_folder(output_folder)
+    print("Removing stopwords from CSV files...")
+    delete_create_folder(output_folder)
     
     # Loop through all files in the input folder
     for filename in os.listdir(input_folder):
@@ -47,7 +48,7 @@ def noStopWordsCSV(input_folder, output_folder):
         
         # Check if it's a file and has a .csv extension before processing
         if os.path.isfile(file_path) and filename.endswith('.csv'):
-            print(f"Processing {filename}...")
+            # print(f"Processing {filename}...")
             
             # Load CSV file
             df = pd.read_csv(file_path)
@@ -59,7 +60,7 @@ def noStopWordsCSV(input_folder, output_folder):
             output_path = os.path.join(output_folder, filename)
             df.to_csv(output_path, index=False)
 
-    print("All files processed.")
+    print("All files processed(removed stopwords mapreduce).")
 
 ########################
 #Functions for mapreduce
@@ -85,14 +86,15 @@ def process_word_count_pairs(pairs):
     return processed_pairs
 
 def noStopWordsMapReduce(input_folder, output_folder):
-    create_folder(output_folder)
+    print("Removing stopwords from MapReduce")
+    delete_create_folder(output_folder)
     
     # Loop through all files in the input folder
     for filename in os.listdir(input_folder):
         file_path = os.path.join(input_folder, filename)
         
         if os.path.isfile(file_path):
-            print(f"Processing {filename}...")
+            # print(f"Processing {filename}...")
             
             # Read the JSON-file structured result
             with open(file_path, 'r', encoding='utf-8') as file:
@@ -104,7 +106,7 @@ def noStopWordsMapReduce(input_folder, output_folder):
             # Save the processed result to file
             save_to_file(processed_word_count_pairs, filename, output_folder)
 
-    print("All files processed.")
+    print("All files processed(removed stopwords CSV).")
 
 # Usage
 # noStopWordsCSV('Tweets_by_apellido', 'Tweets_by_apellido_noStops')

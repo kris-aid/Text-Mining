@@ -1,8 +1,12 @@
 import pandas as pd
 import os
+import matplotlib
+matplotlib.use('Agg')  # Set backend to a non-interactive backend 'Agg'
 import matplotlib.pyplot as plt
 
+
 def calcTop10Users():
+    print("Calculating top 10 users...")
     # Define the path to the directory with your CSV files
     directory_path = 'Tweets_by_apellido'
     output_directory = 'Output/Tweets'  # Output directory
@@ -59,3 +63,4 @@ def calcTop10Users():
 
     print(f'Top 10 tweet counts saved to {output_txt_path}')
     print(f"Chart saved to {output_chart_path}")
+

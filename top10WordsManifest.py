@@ -1,15 +1,16 @@
 import json
-from MyUtils import create_folder
+from MyUtils import delete_create_folder
 import os
 
 def top10WordsMapReduce(input_folder, output_folder):
-    create_folder(output_folder)
+    print("Calculating top 10 words MapReduce...")
+    delete_create_folder(output_folder)
   
     for filename in os.listdir(input_folder):
         input_filepath = os.path.join(input_folder, filename)
         
         if os.path.isfile(input_filepath):
-            print(f"Processing {filename}...")
+            # print(f"Processing {filename}...")
             
             # Read JSON file which is expected to be a list of lists
             with open(input_filepath, 'r', encoding='utf-8') as file:
@@ -29,7 +30,8 @@ def top10WordsMapReduce(input_folder, output_folder):
             with open(output_filepath, 'w', encoding='utf-8') as outfile:
                 json.dump(top10words, outfile, indent=4)
 
-            print(f"Top 10 words saved to {output_filepath}")
+            # print(f"Top 10 words saved to {output_filepath}")
+    print(f"All files in '{input_folder}' processed and outputs saved in '{output_folder}'.")
 
 # # Example usage:
 # top10WordsMapReduce('Output/Manifest/lemmas', 'Output/Manifest/top10words')

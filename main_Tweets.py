@@ -3,11 +3,11 @@ import os
 from collections import Counter
 import nltk
 from nltk.tokenize import word_tokenize
-from MyUtils import create_folder
+from MyUtils import delete_create_folder
 
 nltk.download('punkt')
 
-create_folder('Output/Tweets/Top10Words')
+delete_create_folder('Output/Tweets/Top10Words')
 
 # Step 1: Read the Top10Users.csv file
 top_users_df = pd.read_csv('Output/Tweets/Top10Users.csv')
@@ -18,7 +18,7 @@ tweets_folder = 'Output/Tweets/lemmas'
 output_folder = 'Output/Tweets/Top10Words'
 
 # Ensure the output folder exists
-create_folder(output_folder)
+delete_create_folder(output_folder)
 
 # Iterate over the top users and calculate term frequencies
 for top_user in top_users:
