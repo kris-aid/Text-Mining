@@ -1,10 +1,10 @@
 import threading
 from removeStopWords import noStopWordsCSV, noStopWordsMapReduce
 from lemmatization import lemmatizationMapReduce, lemmatizationCSV
-from top10Users import calcTopUsers
-from top10WordsManifest import topWordsMapReduce
+from topUsers import calcTopUsers
+from topWordsManifest import topWordsMapReduce
 from tweets_freq import tweets_frequency
-from top10TermsTimeline import make_timeline
+from topTermsTimeline import make_timeline
 def thread1_workflow(nostops=True, lemmatization=True, calcTopWords=10):
     if nostops:
         # Remove stopwords using MapReduce
