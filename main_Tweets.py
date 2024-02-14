@@ -4,6 +4,7 @@ from collections import Counter
 import nltk
 from nltk.tokenize import word_tokenize
 from MyUtils import delete_create_folder
+from math import log
 
 nltk.download('punkt')
 
@@ -20,34 +21,44 @@ output_folder = 'Output/Tweets/Top10Words'
 # Ensure the output folder exists
 delete_create_folder(output_folder)
 
+# Define the maximum number of rows for the CSV output
+max_rows = 10
+
 # Iterate over the top users and calculate term frequencies
 for top_user in top_users:
-    # Initialize Counter object for the user
     term_freq = Counter()
 
-    # Iterate over all files in the tweets_folder
+    # Load tweets for the current top_user
+    files_tweets = []
     for file_name in os.listdir(tweets_folder):
         if file_name.endswith('.csv'):
             # Load the CSV file
             df = pd.read_csv(os.path.join(tweets_folder, file_name))
-            
-            # Filter tweets for the current top_user
             user_tweets = df[df['tweet_screen_name'] == top_user]
+            files_tweets.extend(user_tweets['tweet_text'].astype(str).tolist())
 
-            # Concatenate all tweet texts into a single string
-            tweets_combined = ' '.join(user_tweets['tweet_text'].astype(str))
+    # N is the total number of tweets for the user
+    N = len(files_tweets)
 
-            # Tokenize the text
-            tokens = word_tokenize(tweets_combined)
+    # Tokenize the text and update term frequencies
+    for tweet in files_tweets:
+        tokens = word_tokenize(tweet)
+        term_freq.update(tokens)
 
-            # Update the term frequency Counter
-            term_freq.update(tokens)
-    
     # Convert term frequencies to a DataFrame
-    freq_df = pd.DataFrame(term_freq.items(), columns=['term', 'frequency'])
-    
+    freq_df = pd.DataFrame(term_freq.items(), columns=['term', 'tf'])
+
     # Sort DataFrame by frequency in descending order
-    freq_df.sort_values(by='frequency', ascending=False, inplace=True)
-    
-    # Write the frequency DataFrame of the current user to a CSV file
-    freq_df.to_csv(os.path.join(output_folder, f'{top_user}.csv'), index=False)
+    freq_df.sort_values(by='tf', ascending=False, inplace=True)
+
+    # Calculate inverse frequency for each term and add it as a new column
+    freq_df['idf'] = freq_df['tf'].apply(lambda x: log(N / x))
+
+    # Calculate the product of frequency and inverse frequency
+    freq_df['tf_idf'] = freq_df['tf'] * freq_df['idf']
+
+    # Limit the DataFrame to the specified number of rows using the max_rows variable
+    limited_freq_df = freq_df.head(max_rows)
+
+    # Write the DataFrame with inverse frequency to a CSV file
+    limited_freq_df.to_csv(os.path.join(output_folder, f'{top_user}.csv'), index=False)
