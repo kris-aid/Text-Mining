@@ -2,7 +2,7 @@ import json
 from MyUtils import delete_create_folder
 import os
 
-def top10WordsMapReduce(input_folder, output_folder):
+def topWordsMapReduce(input_folder, output_folder,max_words=10):
     print("Calculating top 10 words MapReduce...")
     delete_create_folder(output_folder)
   
@@ -20,7 +20,7 @@ def top10WordsMapReduce(input_folder, output_folder):
             word_count_list.sort(key=lambda x: x[1], reverse=True)
 
             # Get the top 10 words
-            top10words = word_count_list[:10]
+            top10words = word_count_list[:max_words]
             
             # Prepare the output file path
             output_filename = f"{os.path.splitext(filename)[0]}_top10Words.json"

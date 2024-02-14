@@ -5,8 +5,8 @@ matplotlib.use('Agg')  # Set backend to a non-interactive backend 'Agg'
 import matplotlib.pyplot as plt
 
 
-def calcTop10Users():
-    print("Calculating top 10 users...")
+def calcTopUsers(max_users=10):
+    print("Calculating top ",max_users," users...")
     # Define the path to the directory with your CSV files
     directory_path = 'Tweets_by_apellido'
     output_directory = 'Output/Tweets'  # Output directory
@@ -29,7 +29,7 @@ def calcTop10Users():
     tweet_counts = all_tweets_df.groupby(['tweet_screen_name', 'full_name']).size()
 
     # Sort tweet counts in descending order and get the top 10
-    top_10_tweet_counts = tweet_counts.sort_values(ascending=False).head(10)
+    top_10_tweet_counts = tweet_counts.sort_values(ascending=False).head(max_users)
 
     # Reset the index to get a DataFrame with screen name, full name, and count columns
     top_10_df = top_10_tweet_counts.reset_index(name='tweet_count')
@@ -38,11 +38,9 @@ def calcTop10Users():
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
 
-    # Define the full output file path for the text file
-    output_txt_path = os.path.join(output_directory, 'Top10Users.txt')
 
     # Save the top 10 result to a text file in the specified directory, excluding 'tweet_screen_name'
-    output_csv_path = os.path.join(output_directory, 'Top10Users.csv')
+    output_csv_path = os.path.join(output_directory, 'Top' + str(max_users) + 'Users.csv')
     top_10_df.to_csv(output_csv_path, index=False, header=True)
 
 
@@ -56,11 +54,10 @@ def calcTop10Users():
     plt.tight_layout()
 
     # Define the full output file path for the chart image
-    output_chart_path = os.path.join(output_directory, 'Top10_Users_Chart.png')
+    output_chart_path = os.path.join(output_directory, 'Top'+ str(max_users) +'_Users_Chart.png')
 
     # Save the chart
     plt.savefig(output_chart_path)
 
-    print(f'Top 10 tweet counts saved to {output_txt_path}')
     print(f"Chart saved to {output_chart_path}")
 
