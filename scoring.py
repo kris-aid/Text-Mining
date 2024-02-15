@@ -121,7 +121,37 @@ def score_search(df, uservector):
         score.loc[0, file1] = similarity
     
     return score
-
+def create_dataset_from_files(file1_path, file2_path):
+    # Read data from the first JSON file
+    with open(file1_path, 'r') as file:
+        data1 = json.load(file)
+    
+    # Read data from the second JSON file
+    with open(file2_path, 'r') as file:
+        data2 = json.load(file)
+    
+    # Extract unique keys from both JSON files
+    keys = set()
+    for item in data1:
+        keys.add(item[0])
+    for item in data2:
+        keys.add(item[0])
+    
+    # Convert keys to a list
+    keys = list(keys)
+    
+    # Initialize DataFrame with 0 values
+    df = pd.DataFrame(0, index=keys, columns=[file1_path, file2_path])
+    
+    # Update DataFrame with values from the first JSON file
+    for key, value in data1:
+        df.loc[key, file1_path] = value
+    
+    # Update DataFrame with values from the second JSON file
+    for key, value in data2:
+        df.loc[key, file2_path] = value
+    
+    return df
 folder_path = 'Output/Manifest/top10words'  # Relative path to the folder
 tf = create_dataset_from_folder(folder_path)
 print(tf)
@@ -136,3 +166,13 @@ print(idf)
 print(idf_tf)
 print(similarity_M)
 print(score_search(idf_tf,uservector))
+
+
+#Similarity Manifest-Twitter
+
+folder_path_manifest='Output/Simil/ManifiestTopQuito/yunda_top10Words.json'
+folder_path_top_quito='Output/Simil/TopQuito/LoroHomero.json'
+sim_manif_tf=create_dataset_from_files(folder_path_manifest, folder_path_top_quito)
+similarity_manifest_vector=similarity_matrix(inverse_document_term_frequency(sim_manif_tf))
+print(sim_manif_tf)
+print(similarity_manifest_vector)
