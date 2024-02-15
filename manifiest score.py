@@ -222,10 +222,11 @@ def piechart(data):
         plt.pie(values, labels=labels, autopct='%1.1f%%', startangle=140)
         plt.title('Pie Chart for Score of '+ name)
         plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-
-        plt.show()
         
         plt.savefig('Output/Simil/Desviation/desviation '+name+'.png')
+        plt.show()
+        
+        
         
         
         
@@ -239,9 +240,9 @@ idf_tf=inverse_document_term_frequency(tf)
 similarity_M=similarity_matrix(idf_tf)
 
 
-# desviation=desviation_candidates('Output/Manifest/noStops',tf,idf,idf_tf)
+desviation=desviation_candidates('Output/Manifest/noStops',tf,idf,idf_tf)
 # print(desviation)
-# piechart(desviation)
+piechart(desviation)
 # print(similarity_M)
 uservector=create_word_vector("quito triunfo empleo",tf,idf)
 print(score_search(idf_tf, uservector))
