@@ -4,11 +4,15 @@ import pandas as pd
 import os
 import shutil
 import re
-
+import  matplotlib.pyplot as plt
 def calculate_similarity(vector1, vector2):
+    #print(vector1)
+    #print(vector2)
     dot_product = sum(v1 * v2 for v1, v2 in zip(vector1, vector2))
     magnitude1 = math.sqrt(sum(v**2 for v in vector1))
+    #print(magnitude1)
     magnitude2 = math.sqrt(sum(v**2 for v in vector2))
+    #print(magnitude2)
     similarity = dot_product / (magnitude1 * magnitude2)
     return similarity
 def inverse_frequency(words_freq,number_doc):
@@ -27,8 +31,8 @@ def create_dataset_from_folder(folder_path):
             with open(os.path.join(folder_path, file_name), 'r') as file:
                 json_data = json.load(file)
                 for item in json_data:
-                    if isinstance(item, list) and len(item) == 2:
-                        key, _ = item
+                    if isinstance(item, list) and len(item) == 5:
+                        key, _,_,_,_ = item
                         keys.add(key)
     
     # Initialize DataFrame with 0 values
@@ -41,8 +45,8 @@ def create_dataset_from_folder(folder_path):
             with open(os.path.join(folder_path, file_name), 'r') as file:
                 json_data = json.load(file)
                 for item in json_data:
-                    if isinstance(item, list) and len(item) == 2:
-                        key, value = item
+                    if isinstance(item, list) and len(item) == 5:
+                        key, value,_,_,_ = item
                         if key in df.index:
                             df.loc[key, file_prefix] = value  # Use the file prefix as index instead of the full file name
     
@@ -84,7 +88,7 @@ def similarity_matrix(df):
         for file2 in file_names:
             similarity = calculate_similarity(df[file1], df[file2])
             dataset.loc[file1, file2] = similarity
-    
+    dataset.to_csv('Output/similarity_matrix.csv', index=True)
     return dataset
 
 
@@ -176,12 +180,61 @@ def create_word_vector_from_json(json_path, dataset,idf):
     
     return word_vector.multiply([count for _, count in idf])
 
-folder_path = 'Output/Manifest/top10words'  # Relative path to the folder
+def electoral_desviation(json_manifest_path, tf, idf, idf_tf):
+    scores = score_search(idf_tf, create_word_vector_from_json(json_manifest_path, tf, idf))
+    candidate = json_manifest_path.split("/")[-1].split(".")[0]
+    
+    # Clean each column name
+    scores.columns = scores.columns.str.replace(".json", "")
+
+    score = None  # Set a default value for the score variable
+
+    if candidate in scores.columns:
+        score = scores[candidate].values[0]
+        print(score)
+
+    if score is not None:
+        return float(1 - score)
+    else:
+        # Handle the case where score is not defined
+        print("Score not found for candidate:", candidate)
+        return 0  # Or return an appropriate value or raise an exception
+
+def desviation_candidates(folder_path,tf,idf,idf_tf):
+    desviation={}
+    for file in os.listdir(folder_path):
+        if file.endswith('.txt'):
+            result=electoral_desviation(folder_path+"/"+file,tf,idf,idf_tf)
+            if result is not 0:
+                desviation[file]=result
+            else:
+                print("No score for ",file)
+    
+    return desviation
+def piechart(data):
+    labels = data.keys()
+    values = data.values()
+
+    plt.pie(values, labels=labels, autopct='%1.1f%%', startangle=140)
+    plt.title('Pie Chart for Scores')
+    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+    plt.show()
+
+#folder_path = 'Output/Manifest/top10words'  # Relative path to the folder
+folder_path = 'Output/Tweets/Top10WordsJson'  # Relative path to the folder
 tf = create_dataset_from_folder(folder_path)
+print(tf)
 df = document_frequency(tf)
 idf = inverse_document_frequency(tf)
 idf_tf=inverse_document_term_frequency(tf)
 similarity_M=similarity_matrix(idf_tf)
 uservector=create_word_vector("adulto",tf,idf)
 
-print(score_search(idf_tf,create_word_vector_from_json('MapReduce_Manifests/benavides.txt',tf,idf)))
+print(similarity_M)
+#print(score_search(idf_tf,create_word_vector_from_json('Output/Manifest/noStops/maldonado.txt',tf,idf)))
+
+#print(electoral_desviation('Output/Manifest/noStops/maldonado.txt',tf,idf,idf_tf))
+desviation=desviation_candidates('Output/Manifest/noStops',tf,idf,idf_tf)
+print(desviation)
+piechart(desviation)

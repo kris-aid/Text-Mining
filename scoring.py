@@ -27,8 +27,8 @@ def create_dataset_from_folder(folder_path):
             with open(os.path.join(folder_path, file_name), 'r') as file:
                 json_data = json.load(file)
                 for item in json_data:
-                    if isinstance(item, list) and len(item) == 2:
-                        key, _ = item
+                    if isinstance(item, list) and len(item) == 5:
+                        key, _,_,_,_ = item
                         keys.add(key)
     
     # Initialize DataFrame with 0 values
@@ -41,12 +41,31 @@ def create_dataset_from_folder(folder_path):
             with open(os.path.join(folder_path, file_name), 'r') as file:
                 json_data = json.load(file)
                 for item in json_data:
-                    if isinstance(item, list) and len(item) == 2:
-                        key, value = item
+                    if isinstance(item, list) and len(item) == 5:
+                        key, value,_,_,_ = item
                         if key in df.index:
                             df.loc[key, file_prefix] = value  # Use the file prefix as index instead of the full file name
     
     return df
+# def create_dataset_from_folder(folder_path):
+#     file_names = [file_name.split("_")[0] for file_name in os.listdir(folder_path) if file_name.endswith('.json')]
+#     data = []  # List to store (term, value1) tuples
+
+#     for file_name in os.listdir(folder_path):
+#         if file_name.endswith('.json'):
+#             with open(os.path.join(folder_path, file_name), 'r') as file:
+#                 try:
+#                     json_data = json.load(file)
+#                     for item in json_data:
+#                         if isinstance(item, list) and len(item) == 5:
+#                             term, value1, _, _, _ = item
+#                             data.append((term, value1))
+#                 except json.JSONDecodeError:
+#                     print(f"Error decoding JSON in file: {file_name}")
+
+#     df = pd.DataFrame(data, columns=['Word', 'tf'])
+
+#     return df
 
 def document_frequency(dataset):
     words_count = []
@@ -73,6 +92,7 @@ def inverse_document_term_frequency(dataset):
     
     # Iterate over each word and its count
     for word, count in words_count:
+        #print(count)
         dataset.loc[word] *= count
     
     return dataset
@@ -82,6 +102,10 @@ def similarity_matrix(df):
     
     for file1 in file_names:
         for file2 in file_names:
+            df1 = df[file1]
+            #print(df1)
+            df2 = df[file2]
+            #print(df2)
             similarity = calculate_similarity(df[file1], df[file2])
             dataset.loc[file1, file2] = similarity
     
@@ -108,6 +132,8 @@ def create_word_vector(text, dataset,idf):
             word_vector.loc[0, word] = freq
     
     return word_vector.multiply([count for _, count in idf])
+
+
 def score_search(df, uservector):
     file_names = df.columns
     score = pd.DataFrame(0, index=[0], columns=df.columns)
@@ -121,13 +147,13 @@ def score_search(df, uservector):
         score.loc[0, file1] = similarity
     
     return score
-def create_dataset_from_files(file1_path, file2_path):
+def create_dataset_from_files(manifest_path, tweets_path):
     # Read data from the first JSON file
-    with open(file1_path, 'r') as file:
+    with open(manifest_path, 'r') as file:
         data1 = json.load(file)
     
     # Read data from the second JSON file
-    with open(file2_path, 'r') as file:
+    with open(tweets_path, 'r') as file:
         data2 = json.load(file)
     
     # Extract unique keys from both JSON files
@@ -141,38 +167,38 @@ def create_dataset_from_files(file1_path, file2_path):
     keys = list(keys)
     
     # Initialize DataFrame with 0 values
-    df = pd.DataFrame(0, index=keys, columns=[file1_path, file2_path])
+    df = pd.DataFrame(0, index=keys, columns=[manifest_path, tweets_path])
     
     # Update DataFrame with values from the first JSON file
-    for key, value in data1:
-        df.loc[key, file1_path] = value
+    for key, value, in data1:
+        df.loc[key, manifest_path] = value
     
     # Update DataFrame with values from the second JSON file
-    for key, value in data2:
-        df.loc[key, file2_path] = value
+    for key, value,_,_,_ in data2:
+        df.loc[key, tweets_path] = value
     
     return df
-folder_path = 'Output/Manifest/top10words'  # Relative path to the folder
+folder_path = 'Output/Tweets/Top10WordsJson'  # Relative path to the folder
 tf = create_dataset_from_folder(folder_path)
-print(tf)
+#print(tf)
 df = document_frequency(tf)
 idf = inverse_document_frequency(tf)
 idf_tf=inverse_document_term_frequency(tf)
 similarity_M=similarity_matrix(idf_tf)
-uservector=create_word_vector("adulto",tf,idf)
+uservector=create_word_vector("sueno quito triunfo",tf,idf)
 
-print(df)
-print(idf)
-print(idf_tf)
-print(similarity_M)
-print(score_search(idf_tf,uservector))
+# print(df)
+# print(idf)
+# print(idf_tf)
+# print(similarity_M)
+#print(score_search(idf_tf,uservector))
 
 
 #Similarity Manifest-Twitter
 
 folder_path_manifest='Output/Simil/ManifiestTopQuito/yunda_top10Words.json'
-folder_path_top_quito='Output/Simil/TopQuito/LoroHomero.json'
+folder_path_top_quito='Output/Simil/TopQuito/yunda.json'
 sim_manif_tf=create_dataset_from_files(folder_path_manifest, folder_path_top_quito)
-similarity_manifest_vector=similarity_matrix(inverse_document_term_frequency(sim_manif_tf))
 print(sim_manif_tf)
+similarity_manifest_vector=similarity_matrix(inverse_document_term_frequency(sim_manif_tf))
 print(similarity_manifest_vector)
