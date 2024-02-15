@@ -22,11 +22,13 @@ def calcTopUsers(max_users=10):
             current_df = pd.read_csv(filepath)
             # Concatenate 'nombre' and 'apellido' into a new 'full_name' column
             current_df['full_name'] = current_df['nombre'] + ' ' + current_df['apellidos']
+            #retrieve first "apellido" and store it in "apellido"
+            current_df['apellido'] = current_df['apellidos'].str.split(' ').str[0]
             # Concatenate the current DataFrame to the aggregated DataFrame
             all_tweets_df = pd.concat([all_tweets_df, current_df], ignore_index=True)
 
     # Group the data by 'tweet_screen_name' and 'full_name', then count the number of tweets
-    tweet_counts = all_tweets_df.groupby(['tweet_screen_name', 'full_name']).size()
+    tweet_counts = all_tweets_df.groupby(['tweet_screen_name', 'full_name','apellido']).size()
 
     # Sort tweet counts in descending order and get the top 10
     top_10_tweet_counts = tweet_counts.sort_values(ascending=False).head(max_users)

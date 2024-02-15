@@ -31,6 +31,8 @@ def tweets_frequency(max_users =10,max_rows=10):
 
     # Iterate over the top users and calculate term frequencies
     for top_user in top_users:
+        apellido = top_users_df[top_users_df['tweet_screen_name'] == top_user]['apellido'].values[0]
+        apellido = apellido.lower()
         term_freq = Counter()
 
         # Load tweets for the current top_user
@@ -57,7 +59,13 @@ def tweets_frequency(max_users =10,max_rows=10):
         freq_df.sort_values(by='tf', ascending=False, inplace=True)
         #Count the times that a term appears in the tweets
         
-        freq_df['df'] = freq_df['term'].apply(lambda x: sum([1 for tweet in files_tweets if x in tweet]))
+        term_documents = {term: set() for term in term_freq.keys()}
+        for i, tweet in enumerate(files_tweets):
+            for term in term_freq.keys():
+                if term in tweet:
+                    term_documents[term].add(i)
+
+        freq_df['df'] = freq_df['term'].apply(lambda x: len(term_documents[x]))
 
         # Calculate inverse frequency for each term and add it as a new column
         freq_df['idf'] = freq_df['df'].apply(lambda x: log(N / x))
@@ -70,14 +78,14 @@ def tweets_frequency(max_users =10,max_rows=10):
 
         # Write the DataFrame with inverse frequency to a CSV file
         #limited_freq_df.to_csv(os.path.join(output_folder, f'{top_user}.csv'), index=False)
-        freq_df.to_csv(os.path.join(output_folder, f'{top_user}.csv'), index=False)
+        freq_df.to_csv(os.path.join(output_folder, f'{apellido}.csv'), index=False)
 
         limited_freq_df = freq_df.head(max_rows)
-        limited_freq_df.to_csv(os.path.join(output_folder, f'{top_user}.csv'), index=False)
+        limited_freq_df.to_csv(os.path.join(output_folder, f'{apellido}.csv'), index=False)
 
         # Convert the limited DataFrame to a list of [word, frequency] for JSON output
-        json_data = limited_freq_df[['term', 'tf']].values.tolist()
-        json_file_path = os.path.join(json_output_folder, f'{top_user}.json')
+        json_data = limited_freq_df[['term', 'tf','df','idf','tf_idf']].values.tolist()
+        json_file_path = os.path.join(json_output_folder, f'{apellido}.json')
         
         # Write the list to a JSON file
         with open(json_file_path, 'w') as outfile:

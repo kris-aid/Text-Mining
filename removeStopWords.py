@@ -30,6 +30,11 @@ def remove_stopwords(text):
     # Remove URLs
     text = re.sub(r'https?://\S+|www\.\S+', ' ', text) 
     # Remove special characters
+    # Remove words that start with "#"
+    text = re.sub(r'#\S+', ' ', text)
+    # Remove words that start with "@"
+    text = re.sub(r'@\S+', ' ', text)
+    
     text = re.sub(r'[\W_]+', ' ', text)
     # Tokenize the text
     words = word_tokenize(text)
