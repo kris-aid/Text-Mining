@@ -5,10 +5,17 @@ import nltk
 from nltk.tokenize import word_tokenize
 from MyUtils import delete_create_folder
 from math import log
+import json
 
 nltk.download('punkt')
 
 def tweets_frequency(max_users =10,max_rows=10):
+
+    # Define JSON output folder
+    json_output_folder = 'Output/Tweets/Top' + str(max_rows) + 'WordsJson'
+    # Ensure the JSON output folder exists
+    delete_create_folder(json_output_folder)
+
     delete_create_folder('Output/Tweets/Top'+ str(max_rows) +'Words')
 
     # Step 1: Read the Top10Users.csv file
@@ -64,3 +71,14 @@ def tweets_frequency(max_users =10,max_rows=10):
         # Write the DataFrame with inverse frequency to a CSV file
         #limited_freq_df.to_csv(os.path.join(output_folder, f'{top_user}.csv'), index=False)
         freq_df.to_csv(os.path.join(output_folder, f'{top_user}.csv'), index=False)
+
+        limited_freq_df = freq_df.head(max_rows)
+        limited_freq_df.to_csv(os.path.join(output_folder, f'{top_user}.csv'), index=False)
+
+        # Convert the limited DataFrame to a list of [word, frequency] for JSON output
+        json_data = limited_freq_df[['term', 'tf']].values.tolist()
+        json_file_path = os.path.join(json_output_folder, f'{top_user}.json')
+        
+        # Write the list to a JSON file
+        with open(json_file_path, 'w') as outfile:
+            json.dump(json_data, outfile)

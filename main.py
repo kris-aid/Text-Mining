@@ -55,5 +55,5 @@ def runTask(manifestThread=True, csvThread=True, nostops1=True, lemmatization1=T
     for thread in threads:
         thread.join()
 
-runTask(manifestThread=False, nostops2=False, lemmatization2=False, TopUsers=15,max_terms=20)
+runTask(manifestThread=False, nostops2=False, lemmatization2=False, TopUsers=15,max_terms=15)
 
