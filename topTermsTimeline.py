@@ -16,7 +16,8 @@ def make_timeline(max_terms=10):
         if top_user_file.endswith('.csv'):
             # Read top 10 words for the user
             user_terms_df = pd.read_csv(os.path.join(top_words_folder, top_user_file))
-            top_terms = user_terms_df['term'].tolist()
+            user_terms_df_max = user_terms_df.head(max_terms)
+            top_terms = user_terms_df_max['term'].tolist()
 
             # DataFrame to store the complete weekly timeline for all terms
             timeline_df = pd.DataFrame()
