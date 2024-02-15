@@ -5,6 +5,7 @@ import os
 import shutil
 import re
 import  matplotlib.pyplot as plt
+from MyUtils import delete_create_folder
 def calculate_similarity(vector1, vector2):
     #print(vector1)
     #print(vector2)
@@ -212,15 +213,22 @@ def desviation_candidates(folder_path,tf,idf,idf_tf):
     
     return desviation
 def piechart(data):
-    labels = data.keys()
-    values = data.values()
+    delete_create_folder('Output/Simil/Desviation')
+    for key, value in data.items():
+        data[key] = round(value, 2)
+        labels = ["Dissimilar","Similar"] 
+        values = [value, 1 - value]
+        name=key=key.split(".")[0]
+        plt.pie(values, labels=labels, autopct='%1.1f%%', startangle=140)
+        plt.title('Pie Chart for Score of '+ name)
+        plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
-    plt.pie(values, labels=labels, autopct='%1.1f%%', startangle=140)
-    plt.title('Pie Chart for Scores')
-    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-
-    plt.show()
-
+        plt.show()
+        
+        plt.savefig('Output/Simil/Desviation/desviation '+name+'.png')
+        
+        
+        
 #folder_path = 'Output/Manifest/top10words'  # Relative path to the folder
 folder_path = 'Output/Tweets/Top10WordsJson'  # Relative path to the folder
 tf = create_dataset_from_folder(folder_path)
@@ -229,12 +237,11 @@ df = document_frequency(tf)
 idf = inverse_document_frequency(tf)
 idf_tf=inverse_document_term_frequency(tf)
 similarity_M=similarity_matrix(idf_tf)
-uservector=create_word_vector("adulto",tf,idf)
 
-print(similarity_M)
-#print(score_search(idf_tf,create_word_vector_from_json('Output/Manifest/noStops/maldonado.txt',tf,idf)))
 
-#print(electoral_desviation('Output/Manifest/noStops/maldonado.txt',tf,idf,idf_tf))
-desviation=desviation_candidates('Output/Manifest/noStops',tf,idf,idf_tf)
-print(desviation)
-piechart(desviation)
+# desviation=desviation_candidates('Output/Manifest/noStops',tf,idf,idf_tf)
+# print(desviation)
+# piechart(desviation)
+# print(similarity_M)
+uservector=create_word_vector("quito triunfo empleo",tf,idf)
+print(score_search(idf_tf, uservector))
