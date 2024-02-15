@@ -108,16 +108,19 @@ def create_word_vector(text, dataset,idf):
             word_vector.loc[0, word] = freq
     
     return word_vector.multiply([count for _, count in idf])
-def rank(df):
+def score_search(df, uservector):
     file_names = df.columns
-    dataset = pd.DataFrame(index=file_names, columns=file_names)
+    score = pd.DataFrame(0, index=[0], columns=df.columns)
+    
+    # Extract values from uservector if it's a DataFrame
+    if isinstance(uservector, pd.DataFrame):
+        uservector = uservector.values.flatten()
     
     for file1 in file_names:
-        for file2 in file_names:
-            similarity = calculate_similarity(df[file1], df[file2])
-            dataset.loc[file1, file2] = similarity
+        similarity = calculate_similarity(df[file1], uservector)
+        score.loc[0, file1] = similarity
     
-    return dataset
+    return score
 
 folder_path = 'Output/Manifest/top10words'  # Relative path to the folder
 tf = create_dataset_from_folder(folder_path)
@@ -126,10 +129,10 @@ df = document_frequency(tf)
 idf = inverse_document_frequency(tf)
 idf_tf=inverse_document_term_frequency(tf)
 similarity_M=similarity_matrix(idf_tf)
-uservector=create_word_vector("urbano igual proyecto persona empresa proponer propuesta ayer fisica tomate cero corredor igual plan",tf,idf)
+uservector=create_word_vector("adulto",tf,idf)
 
 print(df)
 print(idf)
 print(idf_tf)
 print(similarity_M)
-print()
+print(score_search(idf_tf,uservector))
