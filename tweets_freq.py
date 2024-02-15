@@ -48,15 +48,19 @@ def tweets_frequency(max_users =10,max_rows=10):
 
         # Sort DataFrame by frequency in descending order
         freq_df.sort_values(by='tf', ascending=False, inplace=True)
+        #Count the times that a term appears in the tweets
+        
+        freq_df['df'] = freq_df['term'].apply(lambda x: sum([1 for tweet in files_tweets if x in tweet]))
 
         # Calculate inverse frequency for each term and add it as a new column
-        freq_df['idf'] = freq_df['tf'].apply(lambda x: log(N / x))
+        freq_df['idf'] = freq_df['df'].apply(lambda x: log(N / x))
 
         # Calculate the product of frequency and inverse frequency
         freq_df['tf_idf'] = freq_df['tf'] * freq_df['idf']
 
         # Limit the DataFrame to the specified number of rows using the max_rows variable
-        limited_freq_df = freq_df.head(max_rows)
+        #limited_freq_df = freq_df.head(max_rows)
 
         # Write the DataFrame with inverse frequency to a CSV file
-        limited_freq_df.to_csv(os.path.join(output_folder, f'{top_user}.csv'), index=False)
+        #limited_freq_df.to_csv(os.path.join(output_folder, f'{top_user}.csv'), index=False)
+        freq_df.to_csv(os.path.join(output_folder, f'{top_user}.csv'), index=False)
